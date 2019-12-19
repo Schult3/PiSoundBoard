@@ -10,11 +10,16 @@ switches = {25: {"filename": "01.mp3"}, 24: {"filename": "02.mp3"}, 23: {"filena
 SoundFilePath = "/home/pi/soundfiles/"
 lastPushedSwitch = False
 player = False
+RelaisPin = 11
 
 def initSwitches():
 	for i in switches:
 		GPIO.setup(i, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
+
+def initRelais():
+	GPIO.setup(RelaisPin, GPIO.OUT)
+	GPIO.output(RelaisPin, GPIO.LOW)
 
 def copyMediaFiles():
 	if len(os.listdir('/media/PiSoundBoard')) > 0:
@@ -31,8 +36,10 @@ def readSwitches():
 	return False
 
 
+GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 initSwitches()
+initRelais()
 copyMediaFiles()
 
 if __name__ == '__main__':
@@ -42,5 +49,6 @@ if __name__ == '__main__':
 
 		filename = readSwitches()
 		if filename != False and os.path.isfile(SoundFilePath + filename):
+			#print(SoundFilePath + filename)
 			player = SoundPlayer(SoundFilePath + filename, 0)
 			player.play(1.0)
